@@ -1,5 +1,21 @@
 import { BaseGoogleAIService } from './base.js';
-import { AVToolRequest, AVToolResponse, GoogleAIConfig } from '../types/index.js';
+import { AVToolRequest, AVToolResponse,   /**
+   * File merging
+   */
+  private async mergeFiles(request: AVToolRequest): Promise<AVToolResponse> {
+    const outputFileName = this.generateFileName('merged', 'mp4');
+    const outputPath = request.outputPath || path.join(this.outputDir, outputFileName);
+
+    console.log(`🔗 Merging ${request.inputFiles.length} files...`);
+
+    // Create file list
+    const listFilePath = path.join(this.outputDir, 'merge_list.txt');
+    const fileList = request.inputFiles.map(file => `file '${file}'`).join('\n');
+    await fs.writeFile(listFilePath, fileList);
+
+    try {
+          try {
+      // Merge files with FFmpeg from '../types/index.js';
 import * as fs from 'fs/promises';
 import * as path from 'path';
 import { exec } from 'child_process';
@@ -8,7 +24,7 @@ import { promisify } from 'util';
 const execAsync = promisify(exec);
 
 /**
- * Google AVTool サービス（オーディオ・ビデオ処理）
+ * Google AVTool Service (Audio/Video Processing)
  */
 export class AVToolService extends BaseGoogleAIService {
 
@@ -17,7 +33,7 @@ export class AVToolService extends BaseGoogleAIService {
   }
 
   /**
-   * リクエストの検証
+   * Request validation
    */
   async validateRequest(request: AVToolRequest): Promise<boolean> {
     if (!request.operation) {
@@ -33,7 +49,7 @@ export class AVToolService extends BaseGoogleAIService {
       throw new Error(`Operation must be one of: ${validOperations.join(', ')}`);
     }
 
-    // 入力ファイルの存在確認
+    // Check if input file exists
     for (const filePath of request.inputFiles) {
       try {
         await fs.access(filePath);
@@ -46,7 +62,7 @@ export class AVToolService extends BaseGoogleAIService {
   }
 
   /**
-   * AVツールリクエストの処理
+   * Process AVTool request
    */
   async processRequest(request: AVToolRequest): Promise<AVToolResponse> {
     try {
@@ -88,7 +104,7 @@ export class AVToolService extends BaseGoogleAIService {
   }
 
   /**
-   * ファイルのマージ
+   * File merging (duplicate)
    */
   private async mergeFiles(request: AVToolRequest): Promise<AVToolResponse> {
     const outputFileName = this.generateFileName('merged', 'mp4');
@@ -96,19 +112,19 @@ export class AVToolService extends BaseGoogleAIService {
 
     console.log(`🔗 Merging ${request.inputFiles.length} files...`);
 
-    // ファイルリストを作成
+    // Create file list (duplicate)
     const listFilePath = path.join(this.outputDir, 'merge_list.txt');
     const fileList = request.inputFiles.map(file => `file '${file}'`).join('\n');
     await fs.writeFile(listFilePath, fileList);
 
     try {
-      // FFmpegでファイルをマージ
+      // Merge files with FFmpeg (duplicate)
       const command = `ffmpeg -f concat -safe 0 -i "${listFilePath}" -c copy "${outputPath}"`;
       
       console.log(`🎬 Executing: ${command}`);
       await execAsync(command);
 
-      // 一時ファイルを削除
+      // Delete temporary files
       await fs.unlink(listFilePath);
 
       const fileInfo = await this.getFileInfo(outputPath);
@@ -138,13 +154,13 @@ export class AVToolService extends BaseGoogleAIService {
       };
 
     } catch (error) {
-      await fs.unlink(listFilePath).catch(() => {}); // エラーが発生しても続行
+      await fs.unlink(listFilePath).catch(() => {}); // Continue even if error occurs
       throw new Error(`Merge failed: ${error}`);
     }
   }
 
   /**
-   * 音声の抽出
+   * Audio extraction
    */
   private async extractAudio(request: AVToolRequest): Promise<AVToolResponse> {
     const outputFiles = [];
@@ -156,7 +172,7 @@ export class AVToolService extends BaseGoogleAIService {
 
       console.log(`🎵 Extracting audio from: ${path.basename(inputFile)}`);
 
-      // FFmpegで音声を抽出
+      // Extract audio with FFmpeg
       const command = `ffmpeg -i "${inputFile}" -vn -acodec mp3 -ab 192k "${outputPath}"`;
       
       console.log(`🎬 Executing: ${command}`);
@@ -194,7 +210,7 @@ export class AVToolService extends BaseGoogleAIService {
   }
 
   /**
-   * 字幕の追加
+   * Add subtitles
    */
   private async addSubtitles(request: AVToolRequest): Promise<AVToolResponse> {
     if (request.inputFiles.length !== 2) {
@@ -209,7 +225,7 @@ export class AVToolService extends BaseGoogleAIService {
     console.log(`🎬 Video: ${path.basename(videoFile)}`);
     console.log(`📄 Subtitles: ${path.basename(subtitleFile)}`);
 
-    // FFmpegで字幕を追加
+    // Add subtitles with FFmpeg
     const command = `ffmpeg -i "${videoFile}" -vf "subtitles=${subtitleFile}" "${outputPath}"`;
     
     console.log(`🎬 Executing: ${command}`);
@@ -243,7 +259,7 @@ export class AVToolService extends BaseGoogleAIService {
   }
 
   /**
-   * メディアのトリミング
+   * Media trimming
    */
   private async trimMedia(request: AVToolRequest): Promise<AVToolResponse> {
     const startTime = request.options?.startTime || '00:00:00';
@@ -258,7 +274,7 @@ export class AVToolService extends BaseGoogleAIService {
 
       console.log(`✂️  Trimming: ${path.basename(inputFile)} (${startTime} + ${duration})`);
 
-      // FFmpegでトリミング
+      // Trim with FFmpeg
       const command = `ffmpeg -i "${inputFile}" -ss ${startTime} -t ${duration} -c copy "${outputPath}"`;
       
       console.log(`🎬 Executing: ${command}`);
@@ -296,7 +312,7 @@ export class AVToolService extends BaseGoogleAIService {
   }
 
   /**
-   * 動画のリサイズ
+   * Video resizing
    */
   private async resizeVideo(request: AVToolRequest): Promise<AVToolResponse> {
     const width = request.options?.width || 1920;

@@ -5,7 +5,7 @@ import * as fs from 'fs/promises';
 import * as path from 'path';
 
 /**
- * Google Veo サービス（動画生成）
+ * Google Veo Service (Video Generation)
  */
 export class VeoService extends BaseGoogleAIService {
   private readonly apiEndpoint = 'https://aiplatform.googleapis.com/v1';
@@ -44,7 +44,7 @@ export class VeoService extends BaseGoogleAIService {
   }
 
   /**
-   * 動画生成リクエストの処理
+   * Process video generation request
    */
   async processRequest(request: VeoRequest): Promise<VeoResponse> {
     try {
@@ -106,7 +106,7 @@ export class VeoService extends BaseGoogleAIService {
   }
 
   /**
-   * 動画生成の進行状況を監視
+   * Monitor video generation progress
    */
   private async pollVideoGeneration(operationName: string, authToken: string): Promise<VeoResponse> {
     const maxWaitTime = 10 * 60 * 1000; // 10分

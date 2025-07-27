@@ -4,7 +4,7 @@ import * as fs from 'fs/promises';
 import * as path from 'path';
 
 /**
- * Google AI サービスのベースクラス
+ * Base class for Google AI services
  */
 export abstract class BaseGoogleAIService {
   protected auth: GoogleAuth;
@@ -15,7 +15,7 @@ export abstract class BaseGoogleAIService {
     this.config = config;
     this.outputDir = path.join(process.cwd(), 'output');
     
-    // Google認証の設定
+    // Google authentication setup
     this.auth = new GoogleAuth({
       keyFile: config.credentialsPath,
       scopes: [
@@ -29,7 +29,7 @@ export abstract class BaseGoogleAIService {
   }
 
   /**
-   * 出力ディレクトリを確保
+   * Ensure output directory exists
    */
   protected async ensureOutputDir(): Promise<void> {
     try {
@@ -40,14 +40,14 @@ export abstract class BaseGoogleAIService {
   }
 
   /**
-   * 認証済みクライアントを取得
+   * Get authenticated client
    */
   protected async getAuthClient() {
     return await this.auth.getClient();
   }
 
   /**
-   * APIキーまたは認証トークンを取得
+   * Get API key or authentication token
    */
   protected async getAuthToken(): Promise<string> {
     if (this.config.apiKey) {
@@ -60,7 +60,7 @@ export abstract class BaseGoogleAIService {
   }
 
   /**
-   * 一意のファイル名を生成
+   * Generate unique filename
    */
   protected generateFileName(prefix: string, extension: string): string {
     const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
@@ -69,7 +69,7 @@ export abstract class BaseGoogleAIService {
   }
 
   /**
-   * ファイルサイズを人間が読みやすい形式に変換
+   * Convert file size to human-readable format
    */
   protected formatFileSize(bytes: number): string {
     if (bytes === 0) return '0 Bytes';
@@ -93,13 +93,13 @@ export abstract class BaseGoogleAIService {
       // ネットワークエラー
       throw new Error(`${operation} failed: Network error - ${error.message}`);
     } else {
-      // その他のエラー
+      // Other errors
       throw new Error(`${operation} failed: ${error.message}`);
     }
   }
 
   /**
-   * プロジェクトIDとロケーションを含むリソース名を構築
+   * Build resource name including project ID and location
    */
   protected buildResourceName(resourceType: string, resourceId?: string): string {
     const basePath = `projects/${this.config.projectId}/locations/${this.config.location || 'us-central1'}`;

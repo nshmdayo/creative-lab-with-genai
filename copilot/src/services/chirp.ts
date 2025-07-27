@@ -5,7 +5,7 @@ import * as fs from 'fs/promises';
 import * as path from 'path';
 
 /**
- * Google Chirp 3 HD サービス（音声生成）
+ * Google Chirp 3 HD Service (Audio Generation)
  */
 export class ChirpService extends BaseGoogleAIService {
   private readonly apiEndpoint = 'https://texttospeech.googleapis.com/v1';
@@ -15,7 +15,7 @@ export class ChirpService extends BaseGoogleAIService {
   }
 
   /**
-   * リクエストの検証
+   * Request validation
    */
   async validateRequest(request: ChirpRequest): Promise<boolean> {
     if (!request.prompt) {
@@ -45,7 +45,7 @@ export class ChirpService extends BaseGoogleAIService {
   }
 
   /**
-   * 音声生成リクエストの処理
+   * Process audio generation request
    */
   async processRequest(request: ChirpRequest): Promise<ChirpResponse> {
     try {
@@ -53,7 +53,7 @@ export class ChirpService extends BaseGoogleAIService {
 
       const authToken = await this.getAuthToken();
       
-      // 言語と声を選択
+      // Select language and voice
       const voiceName = this.selectVoice(request.language || 'en', request.voice || 'female');
       const speakingRate = this.mapSpeed(request.speed || 'normal');
       const pitch = this.mapPitch(request.pitch || 'normal');

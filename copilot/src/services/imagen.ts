@@ -5,7 +5,7 @@ import * as fs from 'fs/promises';
 import * as path from 'path';
 
 /**
- * Google Imagen サービス
+ * Google Imagen Service
  */
 export class ImagenService extends BaseGoogleAIService {
   private readonly apiEndpoint = 'https://aiplatform.googleapis.com/v1';
@@ -15,7 +15,7 @@ export class ImagenService extends BaseGoogleAIService {
   }
 
   /**
-   * リクエストの検証
+   * Request validation
    */
   async validateRequest(request: ImagenRequest): Promise<boolean> {
     if (!request.prompt) {
@@ -42,7 +42,7 @@ export class ImagenService extends BaseGoogleAIService {
   }
 
   /**
-   * 画像生成リクエストの処理
+   * Process image generation request
    */
   async processRequest(request: ImagenRequest): Promise<ImagenResponse> {
     try {
@@ -92,7 +92,7 @@ export class ImagenService extends BaseGoogleAIService {
         const prediction = predictions[i];
         
         if (prediction.bytesBase64Encoded) {
-          // Base64エンコードされた画像データを保存
+          // Save Base64 encoded image data
           const imageBuffer = Buffer.from(prediction.bytesBase64Encoded, 'base64');
           const fileName = this.generateFileName('imagen', 'png');
           const filePath = path.join(this.outputDir, fileName);
@@ -143,7 +143,7 @@ export class ImagenService extends BaseGoogleAIService {
   }
 
   /**
-   * 画像編集機能（Image-to-Image）
+   * Image editing functionality (Image-to-Image)
    */
   async editImage(
     imagePath: string,
@@ -152,7 +152,7 @@ export class ImagenService extends BaseGoogleAIService {
     options?: Partial<ImagenRequest>
   ): Promise<ImagenResponse> {
     try {
-      // 入力画像を読み込み
+      // Load input image
       const imageBuffer = await fs.readFile(imagePath);
       const imageBase64 = imageBuffer.toString('base64');
 
@@ -261,7 +261,7 @@ export class ImagenService extends BaseGoogleAIService {
   }
 
   /**
-   * 画像のアップスケーリング
+   * Image upscaling
    */
   async upscaleImage(imagePath: string, scaleFactor: number = 2): Promise<ImagenResponse> {
     try {

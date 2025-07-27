@@ -5,7 +5,7 @@ import * as fs from 'fs/promises';
 import * as path from 'path';
 
 /**
- * Google Lyria サービス（音楽生成）
+ * Google Lyria Service (Music Generation)
  */
 export class LyriaService extends BaseGoogleAIService {
   private readonly apiEndpoint = 'https://aiplatform.googleapis.com/v1';
@@ -15,7 +15,7 @@ export class LyriaService extends BaseGoogleAIService {
   }
 
   /**
-   * リクエストの検証
+   * Request validation
    */
   async validateRequest(request: LyriaRequest): Promise<boolean> {
     if (!request.prompt) {
@@ -48,7 +48,7 @@ export class LyriaService extends BaseGoogleAIService {
   }
 
   /**
-   * 音楽生成リクエストの処理
+   * Process music generation request
    */
   async processRequest(request: LyriaRequest): Promise<LyriaResponse> {
     try {
@@ -85,7 +85,7 @@ export class LyriaService extends BaseGoogleAIService {
       console.log(`😊 Mood: ${request.mood || 'auto'}`);
       console.log(`⏱️  Duration: ${request.duration || 30} seconds`);
 
-      // 音楽生成は時間がかかるため、まず生成ジョブを開始
+      // Music generation takes time, so start generation job first
       const response = await axios.post(
         `${this.apiEndpoint}/${resourceName}:predict`,
         requestBody,
@@ -97,12 +97,12 @@ export class LyriaService extends BaseGoogleAIService {
         }
       );
 
-      // ジョブIDを取得して進行状況を監視
+      // Get job ID and monitor progress
       if (response.data.name) {
         const musicResult = await this.pollMusicGeneration(response.data.name, authToken);
         return musicResult;
       } else if (response.data.predictions && response.data.predictions.length > 0) {
-        // 直接結果が返された場合
+        // If result is returned directly
         return await this.processMusicResult(response.data.predictions[0], request);
       } else {
         throw new Error('No music generation result received');
@@ -114,11 +114,11 @@ export class LyriaService extends BaseGoogleAIService {
   }
 
   /**
-   * 音楽生成の進行状況を監視
+   * Monitor music generation progress
    */
   private async pollMusicGeneration(operationName: string, authToken: string): Promise<LyriaResponse> {
-    const maxWaitTime = 8 * 60 * 1000; // 8分
-    const pollInterval = 20 * 1000; // 20秒
+    const maxWaitTime = 8 * 60 * 1000; // 8 minutes
+    const pollInterval = 20 * 1000; // 20 seconds
     const startTime = Date.now();
 
     console.log(`🕐 Monitoring music generation progress...`);
@@ -147,7 +147,7 @@ export class LyriaService extends BaseGoogleAIService {
           }
         }
 
-        // 進行状況を表示
+        // Display progress
         const elapsed = Math.floor((Date.now() - startTime) / 1000);
         console.log(`🎵 Still generating music... (${elapsed}s elapsed)`);
 
@@ -166,13 +166,13 @@ export class LyriaService extends BaseGoogleAIService {
   }
 
   /**
-   * 音楽結果の処理
+   * Process music result
    */
   private async processMusicResult(prediction: any, request: any): Promise<LyriaResponse> {
     const musicFiles = [];
 
     if (prediction.bytesBase64Encoded) {
-      // Base64エンコードされた音楽データを保存
+      // Save Base64 encoded music data
       const audioBuffer = Buffer.from(prediction.bytesBase64Encoded, 'base64');
       const fileName = this.generateFileName('lyria', 'mp3');
       const filePath = path.join(this.outputDir, fileName);
@@ -200,7 +200,7 @@ export class LyriaService extends BaseGoogleAIService {
 
       console.log(`✅ Music saved: ${fileName} (${this.formatFileSize(fileInfo.size)})`);
     } else if (prediction.audioUri) {
-      // URLが返された場合（ダウンロードが必要）
+      // If URL is returned (download required)
       const fileName = this.generateFileName('lyria', 'mp3');
       const filePath = path.join(this.outputDir, fileName);
       
@@ -244,7 +244,7 @@ export class LyriaService extends BaseGoogleAIService {
   }
 
   /**
-   * 音楽ファイルのダウンロード
+   * Download music file
    */
   private async downloadAudio(url: string, filePath: string): Promise<void> {
     const response = await axios({
@@ -263,7 +263,7 @@ export class LyriaService extends BaseGoogleAIService {
   }
 
   /**
-   * テンポのマッピング
+   * Tempo mapping
    */
   private mapTempo(tempo: string): number {
     const tempoMap: Record<string, number> = {
@@ -275,7 +275,7 @@ export class LyriaService extends BaseGoogleAIService {
   }
 
   /**
-   * スタイル転送（音楽からインスピレーションを得る）
+   * Style transfer (generate music inspired by reference music)
    */
   async styleInspiredGeneration(
     referenceAudioPath: string,
@@ -283,7 +283,7 @@ export class LyriaService extends BaseGoogleAIService {
     options?: Partial<LyriaRequest>
   ): Promise<LyriaResponse> {
     try {
-      // 参照音楽を読み込み
+      // Load reference music
       const audioBuffer = await fs.readFile(referenceAudioPath);
       const audioBase64 = audioBuffer.toString('base64');
 
@@ -336,7 +336,7 @@ export class LyriaService extends BaseGoogleAIService {
   }
 
   /**
-   * 音楽の継続生成（既存の音楽から続きを生成）
+   * Continue music generation (generate continuation from existing music)
    */
   async continueMusic(
     seedAudioPath: string,
@@ -344,7 +344,7 @@ export class LyriaService extends BaseGoogleAIService {
     duration: number = 30
   ): Promise<LyriaResponse> {
     try {
-      // シード音楽を読み込み
+      // Load seed music for continuation
       const audioBuffer = await fs.readFile(seedAudioPath);
       const audioBase64 = audioBuffer.toString('base64');
 
@@ -393,7 +393,7 @@ export class LyriaService extends BaseGoogleAIService {
   }
 
   /**
-   * 複数のパートを持つ音楽の生成
+   * Generate multi-part music
    */
   async generateMultiPartMusic(
     parts: Array<{
@@ -424,7 +424,7 @@ export class LyriaService extends BaseGoogleAIService {
         const partResult = await this.processRequest(partRequest);
         allMusicFiles.push(...partResult.music);
         
-        // API制限を避けるため少し待機
+        // Wait briefly to avoid API rate limits
         if (i < parts.length - 1) {
           await new Promise(resolve => setTimeout(resolve, 2000));
         }

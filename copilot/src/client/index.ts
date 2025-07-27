@@ -3,7 +3,7 @@
 import { GoogleAICreativeCLI } from './cli.js';
 
 /**
- * Google AI Creative Tools CLI のエントリーポイント
+ * Entry point for Google AI Creative Tools CLI
  */
 async function main() {
   const cli = new GoogleAICreativeCLI();
