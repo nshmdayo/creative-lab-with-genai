@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "creative-lab": {
+      "command": "node",
+      "args": ["dist/index.js"],
+      "cwd": "/Users/naoto.nishihama/workspace/repositories/private/creative-lab-with-genai"
+    }
+  }
+}

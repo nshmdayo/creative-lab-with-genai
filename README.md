@@ -1,1 +1,0 @@
-# creative-lab-with-genai

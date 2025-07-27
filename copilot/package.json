@@ -1,0 +1,62 @@
+{
+  "name": "gemini-creative-mcp",
+  "version": "2.0.0",
+  "description": "MCP server and client for Google AI creative tools (Imagen, Veo, Chirp 3 HD, Lyria, AVTool)",
+  "main": "dist/server/index.js",
+  "type": "module",
+  "scripts": {
+    "build": "tsc",
+    "build:watch": "tsc --watch",
+    "server": "node dist/server/index.js",
+    "client": "node dist/client/index.js",
+    "dev:server": "tsx src/server/index.ts",
+    "dev:client": "tsx src/client/index.ts",
+    "clean": "rm -rf dist",
+    "test": "npm run build && npm run test:server",
+    "test:server": "tsx src/test/server-test.ts",
+    "install:all": "npm install"
+  },
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "google-ai",
+    "imagen",
+    "veo",
+    "chirp",
+    "lyria",
+    "gemini",
+    "ai-generation",
+    "creative-ai"
+  ],
+  "author": "Naoto Nishihama",
+  "license": "MIT",
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^0.6.0",
+    "@google-ai/generativelanguage": "^2.6.0",
+    "google-auth-library": "^9.4.0",
+    "googleapis": "^144.0.0",
+    "axios": "^1.6.7",
+    "chalk": "^5.3.0",
+    "commander": "^12.0.0",
+    "inquirer": "^9.2.12",
+    "ora": "^8.0.1",
+    "boxen": "^7.1.1",
+    "figlet": "^1.7.0",
+    "gradient-string": "^2.0.2",
+    "nanoid": "^5.0.4",
+    "dotenv": "^16.3.1",
+    "mime-types": "^2.1.35",
+    "form-data": "^4.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.10.0",
+    "@types/inquirer": "^9.0.7",
+    "@types/figlet": "^1.5.8",
+    "@types/mime-types": "^2.1.4",
+    "tsx": "^4.6.0",
+    "typescript": "^5.3.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
