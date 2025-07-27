@@ -1,21 +1,5 @@
 import { BaseGoogleAIService } from './base.js';
-import { AVToolRequest, AVToolResponse,   /**
-   * File merging
-   */
-  private async mergeFiles(request: AVToolRequest): Promise<AVToolResponse> {
-    const outputFileName = this.generateFileName('merged', 'mp4');
-    const outputPath = request.outputPath || path.join(this.outputDir, outputFileName);
-
-    console.log(`🔗 Merging ${request.inputFiles.length} files...`);
-
-    // Create file list
-    const listFilePath = path.join(this.outputDir, 'merge_list.txt');
-    const fileList = request.inputFiles.map(file => `file '${file}'`).join('\n');
-    await fs.writeFile(listFilePath, fileList);
-
-    try {
-          try {
-      // Merge files with FFmpeg from '../types/index.js';
+import { AVToolRequest, AVToolResponse, GoogleAIConfig } from '../types/index.js';
 import * as fs from 'fs/promises';
 import * as path from 'path';
 import { exec } from 'child_process';
@@ -104,7 +88,7 @@ export class AVToolService extends BaseGoogleAIService {
   }
 
   /**
-   * File merging (duplicate)
+   * File merging
    */
   private async mergeFiles(request: AVToolRequest): Promise<AVToolResponse> {
     const outputFileName = this.generateFileName('merged', 'mp4');
@@ -112,13 +96,13 @@ export class AVToolService extends BaseGoogleAIService {
 
     console.log(`🔗 Merging ${request.inputFiles.length} files...`);
 
-    // Create file list (duplicate)
+    // Create file list
     const listFilePath = path.join(this.outputDir, 'merge_list.txt');
     const fileList = request.inputFiles.map(file => `file '${file}'`).join('\n');
     await fs.writeFile(listFilePath, fileList);
 
     try {
-      // Merge files with FFmpeg (duplicate)
+      // Merge files with FFmpeg
       const command = `ffmpeg -f concat -safe 0 -i "${listFilePath}" -c copy "${outputPath}"`;
       
       console.log(`🎬 Executing: ${command}`);
@@ -326,7 +310,7 @@ export class AVToolService extends BaseGoogleAIService {
 
       console.log(`📐 Resizing: ${path.basename(inputFile)} to ${width}x${height}`);
 
-      // FFmpegでリサイズ
+      // Resize with FFmpeg
       const command = `ffmpeg -i "${inputFile}" -vf "scale=${width}:${height}" "${outputPath}"`;
       
       console.log(`🎬 Executing: ${command}`);
@@ -363,7 +347,7 @@ export class AVToolService extends BaseGoogleAIService {
   }
 
   /**
-   * フォーマット変換
+   * Format conversion
    */
   private async convertFormat(request: AVToolRequest): Promise<AVToolResponse> {
     const targetFormat = request.options?.format || 'mp4';
@@ -376,7 +360,7 @@ export class AVToolService extends BaseGoogleAIService {
 
       console.log(`🔄 Converting: ${path.basename(inputFile)} to ${targetFormat}`);
 
-      // FFmpegでフォーマット変換
+      // Format conversion with FFmpeg
       const command = `ffmpeg -i "${inputFile}" "${outputPath}"`;
       
       console.log(`🎬 Executing: ${command}`);
@@ -414,7 +398,7 @@ export class AVToolService extends BaseGoogleAIService {
   }
 
   /**
-   * バッチ処理（複数の操作を順次実行）
+   * Batch processing (execute multiple operations sequentially)
    */
   async batchProcess(operations: AVToolRequest[]): Promise<AVToolResponse[]> {
     console.log(`🔄 Starting batch processing of ${operations.length} operations...`);
@@ -445,7 +429,7 @@ export class AVToolService extends BaseGoogleAIService {
         });
       }
       
-      // 処理間の待機
+      // Wait between operations
       if (i < operations.length - 1) {
         await new Promise(resolve => setTimeout(resolve, 1000));
       }
@@ -458,7 +442,7 @@ export class AVToolService extends BaseGoogleAIService {
   }
 
   /**
-   * システム情報の取得
+   * Get system information
    */
   async getSystemInfo(): Promise<{
     ffmpegVersion: string;
@@ -466,28 +450,28 @@ export class AVToolService extends BaseGoogleAIService {
     availableCodecs: string[];
   }> {
     try {
-      // FFmpegのバージョン情報を取得
+      // Get FFmpeg version information
       const { stdout: versionOutput } = await execAsync('ffmpeg -version');
       const versionMatch = versionOutput.match(/ffmpeg version ([^\s]+)/);
       const ffmpegVersion = versionMatch ? versionMatch[1] : 'unknown';
 
-      // サポートされているフォーマットを取得
+      // Get supported formats
       const { stdout: formatsOutput } = await execAsync('ffmpeg -formats');
       const formats = formatsOutput
         .split('\n')
         .filter(line => line.includes('E ') || line.includes('DE'))
         .map(line => line.split(' ').filter(Boolean)[1])
         .filter(Boolean)
-        .slice(0, 20); // 最初の20個のみ
+        .slice(0, 20); // First 20 only
 
-      // 利用可能なコーデックを取得
+      // Get available codecs
       const { stdout: codecsOutput } = await execAsync('ffmpeg -codecs');
       const codecs = codecsOutput
         .split('\n')
         .filter(line => line.includes('EV') || line.includes('EA') || line.includes('DEV') || line.includes('DEA'))
         .map(line => line.split(' ').filter(Boolean)[1])
         .filter(Boolean)
-        .slice(0, 20); // 最初の20個のみ
+        .slice(0, 20); // First 20 only
 
       return {
         ffmpegVersion,

@@ -223,14 +223,14 @@ export class GoogleAICreativeCLI {
         type: 'input',
         name: 'prompt',
         message: 'Enter your image description:',
-        validate: (input) => input.trim().length > 0 || 'Please enter a description'
+        validate: (input: string) => input.trim().length > 0 || 'Please enter a description'
       },
       {
         type: 'number',
         name: 'numImages',
         message: 'Number of images to generate (1-8):',
         default: 1,
-        validate: (input) => input >= 1 && input <= 8 || 'Please enter a number between 1 and 8'
+        validate: (input: number) => input >= 1 && input <= 8 || 'Please enter a number between 1 and 8'
       },
       {
         type: 'list',
@@ -255,13 +255,13 @@ export class GoogleAICreativeCLI {
         type: 'number',
         name: 'width',
         message: 'Image width (64-2048, optional):',
-        validate: (input) => !input || (input >= 64 && input <= 2048) || 'Width must be between 64 and 2048'
+        validate: (input: number) => !input || (input >= 64 && input <= 2048) || 'Width must be between 64 and 2048'
       },
       {
         type: 'number',
         name: 'height',
         message: 'Image height (64-2048, optional):',
-        validate: (input) => !input || (input >= 64 && input <= 2048) || 'Height must be between 64 and 2048'
+        validate: (input: number) => !input || (input >= 64 && input <= 2048) || 'Height must be between 64 and 2048'
       }
     ]);
 
@@ -299,7 +299,7 @@ export class GoogleAICreativeCLI {
         type: 'input',
         name: 'imagePath',
         message: 'Path to input image:',
-        validate: async (input) => {
+        validate: async (input: string) => {
           try {
             await fs.access(input);
             return true;
@@ -312,7 +312,7 @@ export class GoogleAICreativeCLI {
         type: 'input',
         name: 'prompt',
         message: 'Enter edit instruction:',
-        validate: (input) => input.trim().length > 0 || 'Please enter an instruction'
+        validate: (input: string) => input.trim().length > 0 || 'Please enter an instruction'
       },
       {
         type: 'input',
@@ -354,7 +354,7 @@ export class GoogleAICreativeCLI {
         type: 'input',
         name: 'imagePath',
         message: 'Path to input image:',
-        validate: async (input) => {
+        validate: async (input: string) => {
           try {
             await fs.access(input);
             return true;
@@ -405,14 +405,14 @@ export class GoogleAICreativeCLI {
         type: 'input',
         name: 'prompt',
         message: 'Enter your video description:',
-        validate: (input) => input.trim().length > 0 || 'Please enter a description'
+        validate: (input: string) => input.trim().length > 0 || 'Please enter a description'
       },
       {
         type: 'number',
         name: 'duration',
         message: 'Video duration in seconds (2-120):',
         default: 5,
-        validate: (input) => input >= 2 && input <= 120 || 'Duration must be between 2 and 120 seconds'
+        validate: (input: number) => input >= 2 && input <= 120 || 'Duration must be between 2 and 120 seconds'
       },
       {
         type: 'list',
@@ -487,7 +487,7 @@ export class GoogleAICreativeCLI {
         type: 'input',
         name: 'prompt',
         message: 'Enter text to convert to speech:',
-        validate: (input) => input.trim().length > 0 || 'Please enter some text'
+        validate: (input: string) => input.trim().length > 0 || 'Please enter some text'
       },
       {
         type: 'list',
@@ -564,7 +564,7 @@ export class GoogleAICreativeCLI {
         type: 'input',
         name: 'prompt',
         message: 'Describe the music you want to generate:',
-        validate: (input) => input.trim().length > 0 || 'Please enter a description'
+        validate: (input: string) => input.trim().length > 0 || 'Please enter a description'
       },
       {
         type: 'list',
@@ -604,7 +604,7 @@ export class GoogleAICreativeCLI {
         name: 'duration',
         message: 'Duration in seconds (10-300):',
         default: 30,
-        validate: (input) => input >= 10 && input <= 300 || 'Duration must be between 10 and 300 seconds'
+        validate: (input: number) => input >= 10 && input <= 300 || 'Duration must be between 10 and 300 seconds'
       }
     ]);
 
